@@ -5,7 +5,6 @@ use rocket::request::Form;
 use schema::users::dsl::*;
 use diesel;
 use diesel::prelude::*;
-use diesel::{LimitDsl, LoadDsl};
 
 use models;
 use forms;
@@ -18,13 +17,7 @@ pub fn index() -> Template {
 
 #[get("/<user_id>")]
 pub fn show(user_id: i32) -> Template {
-    let connection = database::establish_connection();
-    let results = users
-        .filter(id.eq(user_id))
-        .limit(1)
-        .load::<models::user::User>(&connection)
-        .expect("Error loading users");
-    Template::render("users/show", results.first())
+    Template::render("users/show", models::user::User::find(user_id))
 }
 
 
@@ -50,13 +43,7 @@ pub fn create(form_data: Form<forms::user::User>) -> Redirect {
 
 #[get("/<user_id>/edit")]
 pub fn edit(user_id: i32) -> Template {
-    let connection = database::establish_connection();
-    let results = users
-        .filter(id.eq(user_id))
-        .limit(1)
-        .load::<models::user::User>(&connection)
-        .expect("Error loading users");
-    Template::render("users/edit", results.first())
+    Template::render("users/edit", models::user::User::find(user_id))
 }
 
 #[put("/<user_id>", data = "<form_data>")]
@@ -78,10 +65,9 @@ pub fn update(user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
 
 #[delete("/<user_id>")]
 pub fn delete(user_id: i32) -> Redirect {
-    let connection = database::establish_connection();
-
-    match diesel::delete(users.find(user_id)).execute(&connection) {
-        Ok(_) => Redirect::to("/users"),
-        Err(error) => panic!("There was a problem opening the file: {:?}", error),
+    if models::user::User::find(user_id).delete() {
+        Redirect::to("/users")
+    } else {
+        panic!("Can't delete user")
     }
 }

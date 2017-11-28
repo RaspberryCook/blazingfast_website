@@ -41,7 +41,7 @@ impl Recipe {
         }
     }
 
-    // remove
+    /// remove
     pub fn delete(&self) -> bool {
         let connection = database::establish_connection();
 

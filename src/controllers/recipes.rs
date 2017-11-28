@@ -81,7 +81,6 @@ pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirec
 
 #[delete("/<recipe_id>")]
 pub fn delete(recipe_id: i32) -> Redirect {
-
     if models::recipe::Recipe::find(recipe_id).delete() {
         Redirect::to("/recipes")
     } else {
