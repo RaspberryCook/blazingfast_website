@@ -24,6 +24,7 @@ mod schema;
 fn main() {
     rocket::ignite()
         .mount("/", routes![controllers::pages::home])
+        // recipes
         .mount("/recipes", routes![controllers::recipes::create])
         .mount("/recipes", routes![controllers::recipes::index])
         .mount("/recipes", routes![controllers::recipes::show])
@@ -31,6 +32,14 @@ fn main() {
         .mount("/recipes", routes![controllers::recipes::edit])
         .mount("/recipes", routes![controllers::recipes::update])
         .mount("/recipes", routes![controllers::recipes::delete])
+        // users
+        .mount("/users", routes![controllers::users::create])
+        .mount("/users", routes![controllers::users::index])
+        .mount("/users", routes![controllers::users::show])
+        .mount("/users", routes![controllers::users::new])
+        .mount("/users", routes![controllers::users::edit])
+        .mount("/users", routes![controllers::users::update])
+        .mount("/users", routes![controllers::users::delete])
         .attach(Template::fairing())
         .launch();
 }

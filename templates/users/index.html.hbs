@@ -1,0 +1,13 @@
+{{#*inline "content"}}
+<h1>Users</h1>
+<ul>
+    {{#each this}}
+        <li><a href="/users/{{id}}">{{firstname}} {{lastname}}</a></li>
+    {{/each}}
+</ul>
+
+<a href="/users/new" class="btn btn-secondary">New user</a>
+
+{{/inline}}
+
+{{~> layouts/main~}}

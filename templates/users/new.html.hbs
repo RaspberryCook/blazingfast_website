@@ -1,0 +1,17 @@
+{{#*inline "content"}}
+<h1>New user</h1>
+<form action="/users" method="POST">
+    <!-- firstname -->
+    <div class="form-group">
+        <label for="firstname">Firstname</label>
+        <input type="text" class="form-control" name="firstname">
+    </div>
+    <!-- lastname -->
+    <div class="form-group">
+        <label for="lastname">Lastname</label>
+        <input type="text" class="form-control" name="lastname">
+    </div>
+    <input type="submit" class="btn btn-secondary">
+</form>
+{{/inline}}
+{{~> layouts/main~}}
