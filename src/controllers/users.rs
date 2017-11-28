@@ -41,9 +41,9 @@ pub fn new() -> Template {
 }
 
 #[post("/", data = "<form_data>")]
-pub fn create(form_data: Form<forms::User>) -> Redirect {
+pub fn create(form_data: Form<forms::user::User>) -> Redirect {
     let connection = database::establish_connection();
-    let user = models::user::NewUser {
+    let user = forms::user::User {
         id: None,
         firstname: form_data.get().firstname.to_string(),
         lastname: form_data.get().lastname.to_string(),
@@ -67,7 +67,7 @@ pub fn edit(user_id: i32) -> Template {
 }
 
 #[put("/<user_id>", data = "<form_data>")]
-pub fn update(user_id: i32, form_data: Form<forms::User>) -> Redirect {
+pub fn update(user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
     let connection = database::establish_connection();
 
     let result = diesel::update(users.find(user_id))

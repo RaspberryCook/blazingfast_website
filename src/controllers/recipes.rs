@@ -47,9 +47,9 @@ pub fn new() -> Template {
 }
 
 #[post("/", data = "<form_data>")]
-pub fn create(form_data: Form<forms::Recipe>) -> Redirect {
+pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
     let connection = database::establish_connection();
-    let recipe = models::recipe::NewRecipe {
+    let recipe = forms::recipe::Recipe {
         id: None,
         name: form_data.get().name.to_string(),
         user_id: form_data.get().user_id,
@@ -73,7 +73,7 @@ pub fn edit(recipe_id: i32) -> Template {
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]
-pub fn update(recipe_id: i32, form_data: Form<forms::Recipe>) -> Redirect {
+pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirect {
     let connection = database::establish_connection();
 
     let result = diesel::update(recipes.find(recipe_id))
