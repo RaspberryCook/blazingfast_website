@@ -2,6 +2,7 @@
 use rocket_contrib::Template;
 use rocket::response::Redirect;
 use rocket::request::Form;
+use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
@@ -27,7 +28,7 @@ pub fn index() -> Template {
 pub fn show(recipe_id: i32) -> Template {
     let connection = database::establish_connection();
     let results = recipes
-        .filter(id.eq(recipe_id))
+        .filter(schema::recipes::dsl::id.eq(recipe_id))
         .limit(1)
         .load::<models::recipe::Recipe>(&connection)
         .expect("Error loading recipes");
@@ -37,7 +38,12 @@ pub fn show(recipe_id: i32) -> Template {
 
 #[get("/new")]
 pub fn new() -> Template {
-    Template::render("recipes/new", &())
+    let connection = database::establish_connection();
+    let results = schema::users::dsl::users
+        .load::<models::user::User>(&connection)
+        .expect("Error loading recipes");
+
+    Template::render("recipes/new", &results)
 }
 
 #[post("/", data = "<form_data>")]
@@ -46,6 +52,7 @@ pub fn create(form_data: Form<forms::Recipe>) -> Redirect {
     let recipe = models::recipe::NewRecipe {
         id: None,
         name: form_data.get().name.to_string(),
+        user_id: form_data.get().user_id,
     };
 
     match diesel::insert(&recipe).into(recipes).execute(&connection) {
@@ -58,7 +65,7 @@ pub fn create(form_data: Form<forms::Recipe>) -> Redirect {
 pub fn edit(recipe_id: i32) -> Template {
     let connection = database::establish_connection();
     let results = recipes
-        .filter(id.eq(recipe_id))
+        .filter(schema::recipes::dsl::id.eq(recipe_id))
         .limit(1)
         .load::<models::recipe::Recipe>(&connection)
         .expect("Error loading recipes");

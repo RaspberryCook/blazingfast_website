@@ -4,6 +4,7 @@ use super::super::schema::recipes;
 pub struct Recipe {
     pub id: i32,
     pub name: String,
+    pub user_id: i32,
 }
 
 #[table_name = "recipes"]
@@ -11,4 +12,5 @@ pub struct Recipe {
 pub struct NewRecipe {
     pub id: Option<i32>,
     pub name: String,
+    pub user_id: i32,
 }

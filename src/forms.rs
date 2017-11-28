@@ -4,6 +4,7 @@
 #[derive(Debug, FromForm)]
 pub struct Recipe {
     pub name: String,
+    pub user_id: i32,
 }
 
 
