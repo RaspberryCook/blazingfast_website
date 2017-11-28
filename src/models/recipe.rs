@@ -3,16 +3,11 @@
 use std;
 
 use database;
-use schema;
 use diesel;
-use diesel::LimitDsl;
-use diesel::LoadDsl;
-use diesel::FilterDsl;
-use diesel::FindDsl;
-use diesel::ExpressionMethods;
-use diesel::ExecuteDsl;
-
+use diesel::{LimitDsl, LoadDsl, FilterDsl, FindDsl, ExpressionMethods, ExecuteDsl};
 use schema::recipes::dsl::recipes;
+use schema;
+
 
 #[derive(Serialize, Queryable, Clone)]
 pub struct Recipe {

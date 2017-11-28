@@ -1,10 +1,7 @@
 use std;
-
 use database;
-
 use schema::users::dsl::users;
-use diesel::LimitDsl;
-use diesel::LoadDsl;
+use diesel::{LimitDsl, LoadDsl};
 
 #[derive(Serialize, Queryable)]
 pub struct User {

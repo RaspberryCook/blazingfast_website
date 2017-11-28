@@ -5,8 +5,7 @@ use rocket::request::Form;
 use schema::users::dsl::*;
 use diesel;
 use diesel::prelude::*;
-use diesel::LimitDsl;
-use diesel::LoadDsl;
+use diesel::{LimitDsl, LoadDsl};
 
 use models;
 use forms;
