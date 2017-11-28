@@ -1,8 +1,9 @@
-use database;
-use schema;
-use schema::recipes::dsl::recipes;
 // use schema::recipes::dsl::*;
 // use diesel::prelude::*;
+use std;
+
+use database;
+use schema;
 use diesel;
 use diesel::LimitDsl;
 use diesel::LoadDsl;
@@ -10,8 +11,8 @@ use diesel::FilterDsl;
 use diesel::FindDsl;
 use diesel::ExpressionMethods;
 use diesel::ExecuteDsl;
-use std;
 
+use schema::recipes::dsl::recipes;
 
 #[derive(Serialize, Queryable, Clone)]
 pub struct Recipe {
@@ -25,7 +26,7 @@ impl Recipe {
     // Get all recipes
     pub fn all(limit: i64) -> std::vec::Vec<Self> {
         let connection = database::establish_connection();
-        recipes.limit(limit).load::<Recipe>(&connection).expect(
+        recipes.limit(limit).load::<Self>(&connection).expect(
             "Error loading recipes",
         )
     }

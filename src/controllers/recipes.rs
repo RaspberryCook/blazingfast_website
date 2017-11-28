@@ -2,15 +2,14 @@
 use rocket_contrib::Template;
 use rocket::response::Redirect;
 use rocket::request::Form;
-use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
-use diesel::LoadDsl;
 
 use models;
 use forms;
 use database;
+
 
 #[get("/")]
 pub fn index() -> Template {
@@ -25,17 +24,13 @@ pub fn show(recipe_id: i32) -> Template {
 
 #[get("/new")]
 pub fn new() -> Template {
-    let connection = database::establish_connection();
-    let results = schema::users::dsl::users
-        .load::<models::user::User>(&connection)
-        .expect("Error loading recipes");
-
-    Template::render("recipes/new", &results)
+    Template::render("recipes/new", models::user::User::all(20))
 }
 
 #[post("/", data = "<form_data>")]
 pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
     let connection = database::establish_connection();
+
     let recipe = forms::recipe::Recipe {
         id: None,
         name: form_data.get().name.to_string(),
@@ -50,7 +45,20 @@ pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
 
 #[get("/<recipe_id>/edit")]
 pub fn edit(recipe_id: i32) -> Template {
-    Template::render("recipes/edit", models::recipe::Recipe::find(recipe_id))
+    #[derive(Serialize)]
+    struct Context {
+        recipe: models::recipe::Recipe,
+        users: Vec<models::user::User>,
+    }
+
+
+    Template::render(
+        "recipes/edit",
+        Context {
+            recipe: models::recipe::Recipe::find(recipe_id),
+            users: models::user::User::all(20),
+        },
+    )
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]
@@ -58,7 +66,10 @@ pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirec
     let connection = database::establish_connection();
 
     let result = diesel::update(recipes.find(recipe_id))
-        .set(name.eq(form_data.get().name.to_string()))
+        .set((
+            name.eq(form_data.get().name.to_string()),
+            // user_id.eq(form_data.get().user_id),
+        ))
         .execute(&connection);
 
 

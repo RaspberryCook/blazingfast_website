@@ -14,13 +14,7 @@ use database;
 
 #[get("/")]
 pub fn index() -> Template {
-    let connection = database::establish_connection();
-    let results = users
-        .limit(20)
-        .load::<models::user::User>(&connection)
-        .expect("Error loading users");
-
-    Template::render("users/index", &results)
+    Template::render("users/index", models::user::User::all(20))
 }
 
 #[get("/<user_id>")]

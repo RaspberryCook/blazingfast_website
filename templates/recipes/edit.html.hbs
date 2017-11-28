@@ -1,10 +1,20 @@
 {{#*inline "content"}}
 <h1>Edit recipe</h1>
-<form action="/recipes/{{id}}" method="POST">
+<form action="/recipes/{{recipe.id}}" method="POST">
     <input type="hidden" name="_method" value="put" />
+    <!-- name -->
     <div class="form-group">
         <label for="name">Name</label>
-        <input type="text" class="form-control" name="name" value="{{name}}">
+        <input type="text" class="form-control" name="name" value="{{recipe.name}}">
+    </div>
+    <!-- user -->
+    <div class="form-group">
+        <label for="user_id">User</label>
+        <select name="user_id" class="form-control">
+            {{#each this.users}}
+                <option value="{{id}}">{{firstname}} {{lastname}}</option>
+            {{/each}}
+        </select>
     </div>
     <input type="submit" class="btn btn-secondary">
 </form>
