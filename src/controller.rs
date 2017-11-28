@@ -3,6 +3,7 @@ pub mod recipes {
     use rocket::response::Redirect;
     use rocket::request::Form;
     use schema::recipes::dsl::*;
+    use diesel;
     use diesel::prelude::*;
     use diesel::LimitDsl;
     use diesel::LoadDsl;
@@ -41,8 +42,6 @@ pub mod recipes {
 
     #[post("/", data = "<form_data>")]
     pub fn create(form_data: Form<forms::Recipe>) -> Redirect {
-        use diesel;
-
         let connection = database::establish_connection();
         let recipe = models::NewRecipe {
             id: None,
@@ -68,8 +67,6 @@ pub mod recipes {
 
     #[put("/<recipe_id>", data = "<form_data>")]
     pub fn update(recipe_id: i32, form_data: Form<forms::Recipe>) -> Redirect {
-        use diesel;
-
         let connection = database::establish_connection();
 
         let result = diesel::update(recipes.find(recipe_id))
@@ -85,8 +82,6 @@ pub mod recipes {
 
     #[delete("/<recipe_id>")]
     pub fn delete(recipe_id: i32) -> Redirect {
-        use diesel;
-
         let connection = database::establish_connection();
 
         match diesel::delete(recipes.find(recipe_id)).execute(&connection) {
