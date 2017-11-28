@@ -1,4 +1,4 @@
-use super::schema::recipes;
+use super::super::schema::recipes;
 
 #[derive(Serialize, Queryable)]
 pub struct Recipe {

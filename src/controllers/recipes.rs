@@ -17,7 +17,7 @@ pub fn index() -> Template {
     let connection = database::establish_connection();
     let results = recipes
         .limit(20)
-        .load::<models::Recipe>(&connection)
+        .load::<models::recipe::Recipe>(&connection)
         .expect("Error loading recipes");
 
     Template::render("recipes/index", &results)
@@ -29,7 +29,7 @@ pub fn show(recipe_id: i32) -> Template {
     let results = recipes
         .filter(id.eq(recipe_id))
         .limit(1)
-        .load::<models::Recipe>(&connection)
+        .load::<models::recipe::Recipe>(&connection)
         .expect("Error loading recipes");
     Template::render("recipes/show", results.first())
 }
@@ -43,7 +43,7 @@ pub fn new() -> Template {
 #[post("/", data = "<form_data>")]
 pub fn create(form_data: Form<forms::Recipe>) -> Redirect {
     let connection = database::establish_connection();
-    let recipe = models::NewRecipe {
+    let recipe = models::recipe::NewRecipe {
         id: None,
         name: form_data.get().name.to_string(),
     };
@@ -60,7 +60,7 @@ pub fn edit(recipe_id: i32) -> Template {
     let results = recipes
         .filter(id.eq(recipe_id))
         .limit(1)
-        .load::<models::Recipe>(&connection)
+        .load::<models::recipe::Recipe>(&connection)
         .expect("Error loading recipes");
     Template::render("recipes/edit", results.first())
 }
