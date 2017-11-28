@@ -6,7 +6,6 @@ use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
-use diesel::LimitDsl;
 use diesel::LoadDsl;
 
 use models;
@@ -15,24 +14,12 @@ use database;
 
 #[get("/")]
 pub fn index() -> Template {
-    let connection = database::establish_connection();
-    let results = recipes
-        .limit(20)
-        .load::<models::recipe::Recipe>(&connection)
-        .expect("Error loading recipes");
-
-    Template::render("recipes/index", &results)
+    Template::render("recipes/index", models::recipe::Recipe::all(20))
 }
 
 #[get("/<recipe_id>")]
 pub fn show(recipe_id: i32) -> Template {
-    let connection = database::establish_connection();
-    let results = recipes
-        .filter(schema::recipes::dsl::id.eq(recipe_id))
-        .limit(1)
-        .load::<models::recipe::Recipe>(&connection)
-        .expect("Error loading recipes");
-    Template::render("recipes/show", results.first())
+    Template::render("recipes/show", models::recipe::Recipe::find(recipe_id))
 }
 
 
@@ -63,13 +50,7 @@ pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
 
 #[get("/<recipe_id>/edit")]
 pub fn edit(recipe_id: i32) -> Template {
-    let connection = database::establish_connection();
-    let results = recipes
-        .filter(schema::recipes::dsl::id.eq(recipe_id))
-        .limit(1)
-        .load::<models::recipe::Recipe>(&connection)
-        .expect("Error loading recipes");
-    Template::render("recipes/edit", results.first())
+    Template::render("recipes/edit", models::recipe::Recipe::find(recipe_id))
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]
@@ -89,10 +70,10 @@ pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirec
 
 #[delete("/<recipe_id>")]
 pub fn delete(recipe_id: i32) -> Redirect {
-    let connection = database::establish_connection();
 
-    match diesel::delete(recipes.find(recipe_id)).execute(&connection) {
-        Ok(_) => Redirect::to("/recipes"),
-        Err(error) => panic!("There was a problem opening the file: {:?}", error),
+    if models::recipe::Recipe::find(recipe_id).delete() {
+        Redirect::to("/recipes")
+    } else {
+        panic!("Can't delete recipe")
     }
 }
