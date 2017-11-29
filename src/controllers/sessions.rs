@@ -1,8 +1,9 @@
 
-use rocket_contrib::Template;
-use rocket::response::Redirect;
 use forms::session::Session;
+use rocket::response::Redirect;
 use rocket::request::Form;
+use rocket::http::{Cookie, Cookies};
+use rocket_contrib::Template;
 
 
 #[get("/new")]
@@ -11,11 +12,14 @@ pub fn new() -> Template {
 }
 
 #[post("/", data = "<form_data>")]
-pub fn create(form_data: Form<Session>) -> Redirect {
+pub fn create(mut cookies: Cookies, form_data: Form<Session>) -> Redirect {
     let form = form_data.get();
 
     match form.user() {
-        Ok(user) => Redirect::to("/"),
+        Ok(user) => {
+            cookies.add(Cookie::new("user", "logged"));
+            Redirect::to("/")
+        }
         Err(_) => Redirect::to("/sessions/new"),
     }
 }
