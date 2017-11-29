@@ -24,7 +24,22 @@ pub fn index() -> Template {
 
 #[get("/<recipe_id>")]
 pub fn show(recipe_id: i32) -> Template {
-    Template::render("recipes/show", models::recipe::Recipe::find(recipe_id))
+    #[derive(Serialize)]
+    struct Context {
+        recipe: models::recipe::Recipe,
+        user: models::user::User,
+    }
+
+    let recipe = models::recipe::Recipe::find(recipe_id);
+    let user = recipe.user();
+
+    Template::render(
+        "recipes/show",
+        Context {
+            recipe: recipe,
+            user: user,
+        },
+    )
 }
 
 
@@ -74,7 +89,7 @@ pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirec
     let result = diesel::update(recipes.find(recipe_id))
         .set((
             name.eq(form_data.get().name.to_string()),
-            // user_id.eq(form_data.get().user_id),
+            user_id.eq(form_data.get().user_id),
         ))
         .execute(&connection);
 

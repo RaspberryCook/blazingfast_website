@@ -1,5 +1,7 @@
 {{#*inline "content"}}
-<h1><a href="/recipes/{{id}}">{{name}}</a></h1>
+<h1><a href="/recipes/{{recipe.id}}">{{recipe.name}}</a></h1>
+
+<p>Recipe of <a href="/users/{{user.id}}">{{user.firstname}} {{user.lastname}}</a></p>
 
 <a href="/recipes/{{id}}/edit" class="btn btn-secondary">Edit</a>
 <!-- delete button -->
