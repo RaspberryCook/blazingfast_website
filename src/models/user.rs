@@ -4,15 +4,18 @@ use schema;
 use schema::users;
 use schema::users::dsl::users as table;
 use diesel;
+use models::recipe::Recipe;
 use diesel::{LimitDsl, LoadDsl, ExpressionMethods, FilterDsl, FindDsl, ExecuteDsl};
 
 
-#[derive(Serialize, Queryable, Clone, Identifiable)]
+#[derive(Serialize, Queryable, Clone, Identifiable, Insertable)]
 #[table_name = "users"]
 pub struct User {
     pub id: i32,
     pub firstname: String,
     pub lastname: String,
+    pub email: String,
+    pub password: String,
 }
 
 impl User {
@@ -47,5 +50,14 @@ impl User {
             Ok(_) => true,
             Err(_) => false,
         }
+    }
+
+    // Get all users
+    pub fn recipes(&self) -> std::vec::Vec<Recipe> {
+        let connection = database::establish_connection();
+        schema::recipes::dsl::recipes
+            .filter(schema::recipes::user_id.eq(self.id))
+            .load::<Recipe>(&connection)
+            .expect("Error loading users")
     }
 }

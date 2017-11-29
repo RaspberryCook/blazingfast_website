@@ -14,17 +14,32 @@
 
 <h1>Signin</h1>
 <form action="/users" method="POST">
-    <!-- firstname -->
-    <div class="form-group">
-        <label for="firstname">Firstname</label>
-        <input type="text" class="form-control" name="firstname">
+    <div class="row">
+        <!-- email -->
+        <div class="form-group col-md-12">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+        <!-- password -->
+        <div class="form-group col-md-12">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <!-- firstname -->
+        <div class="form-group col-md-6">
+            <label for="firstname">Firstname</label>
+            <input type="text" class="form-control" name="firstname">
+        </div>
+        <!-- lastname -->
+        <div class="form-group col-md-6">
+            <label for="lastname">Lastname</label>
+            <input type="text" class="form-control" name="lastname">
+        </div>
+        <!-- submit -->
+        <div class="form-group col-md-12">
+            <input type="submit" class="btn btn-secondary">
+        </div>
     </div>
-    <!-- lastname -->
-    <div class="form-group">
-        <label for="lastname">Lastname</label>
-        <input type="text" class="form-control" name="lastname">
-    </div>
-    <input type="submit" class="btn btn-secondary">
 </form>
 {{/inline}}
 {{~> layouts/main~}}

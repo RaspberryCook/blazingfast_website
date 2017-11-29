@@ -7,17 +7,33 @@ use diesel;
 use diesel::prelude::*;
 
 use models;
+use models::user::User;
 use forms;
 use database;
 
 #[get("/")]
 pub fn index() -> Template {
-    Template::render("users/index", models::user::User::all(20))
+    Template::render("users/index", User::all(20))
 }
 
 #[get("/<user_id>")]
 pub fn show(user_id: i32) -> Template {
-    Template::render("users/show", models::user::User::find(user_id))
+    #[derive(Serialize)]
+    struct Context {
+        recipes: Vec<models::recipe::Recipe>,
+        user: User,
+    }
+
+    let user = User::find(user_id);
+    let recipes = user.recipes();
+
+    Template::render(
+        "users/show",
+        Context {
+            user: user,
+            recipes: recipes,
+        },
+    )
 }
 
 
@@ -33,6 +49,8 @@ pub fn create(form_data: Form<forms::user::User>) -> Redirect {
         id: None,
         firstname: form_data.get().firstname.to_string(),
         lastname: form_data.get().lastname.to_string(),
+        email: form_data.get().email.to_string(),
+        password: form_data.get().password.to_string(),
     };
 
     match diesel::insert(&user).into(users).execute(&connection) {
@@ -43,7 +61,7 @@ pub fn create(form_data: Form<forms::user::User>) -> Redirect {
 
 #[get("/<user_id>/edit")]
 pub fn edit(user_id: i32) -> Template {
-    Template::render("users/edit", models::user::User::find(user_id))
+    Template::render("users/edit", User::find(user_id))
 }
 
 #[put("/<user_id>", data = "<form_data>")]
@@ -65,7 +83,7 @@ pub fn update(user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
 
 #[delete("/<user_id>")]
 pub fn delete(user_id: i32) -> Redirect {
-    if models::user::User::find(user_id).delete() {
+    if User::find(user_id).delete() {
         Redirect::to("/users")
     } else {
         panic!("Can't delete user")
