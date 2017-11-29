@@ -18,12 +18,12 @@ impl User {
             firstname: form.get().firstname.to_string(),
             lastname: form.get().lastname.to_string(),
             email: form.get().email.to_string(),
-            password: Self::encrypt(form.get().password.to_string()),
+            password: Self::encrypt(&form.get().password),
         }
     }
 
 
-    fn encrypt(password: String) -> String {
+    pub fn encrypt(password: &String) -> String {
         use crypto::sha2::Sha256;
         use crypto::digest::Digest;
 
