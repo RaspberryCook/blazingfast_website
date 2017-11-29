@@ -45,13 +45,7 @@ pub fn new() -> Template {
 #[post("/", data = "<form_data>")]
 pub fn create(form_data: Form<forms::user::User>) -> Redirect {
     let connection = database::establish_connection();
-    let user = forms::user::User {
-        id: None,
-        firstname: form_data.get().firstname.to_string(),
-        lastname: form_data.get().lastname.to_string(),
-        email: form_data.get().email.to_string(),
-        password: form_data.get().password.to_string(),
-    };
+    let user = forms::user::User::from_form(form_data);
 
     match diesel::insert(&user).into(users).execute(&connection) {
         Ok(_) => Redirect::to("/users"),

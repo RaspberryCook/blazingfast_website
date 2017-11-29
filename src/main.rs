@@ -2,6 +2,7 @@
 #![feature(custom_derive)]
 #![feature(custom_attribute)]
 #![plugin(rocket_codegen, diesel_codegen)]
+extern crate crypto;
 extern crate dotenv;
 extern crate rocket;
 extern crate rocket_contrib;
