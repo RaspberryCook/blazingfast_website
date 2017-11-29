@@ -2,14 +2,17 @@
 // use diesel::prelude::*;
 use std;
 
+use models;
 use database;
+use schema;
+use schema::recipes;
+use schema::recipes::dsl::recipes as table;
 use diesel;
 use diesel::{LimitDsl, LoadDsl, FilterDsl, FindDsl, ExpressionMethods, ExecuteDsl};
-use schema::recipes::dsl::recipes;
-use schema;
 
 
-#[derive(Serialize, Queryable, Clone)]
+#[derive(Serialize, Queryable, Clone, Identifiable)]
+#[table_name = "recipes"]
 pub struct Recipe {
     pub id: i32,
     pub name: String,
@@ -21,7 +24,7 @@ impl Recipe {
     // Get all recipes
     pub fn all(limit: i64) -> std::vec::Vec<Self> {
         let connection = database::establish_connection();
-        recipes.limit(limit).load::<Self>(&connection).expect(
+        table.limit(limit).load::<Self>(&connection).expect(
             "Error loading recipes",
         )
     }
@@ -29,10 +32,10 @@ impl Recipe {
     /// Find recipe by it's id
     pub fn find(recipe_id: i32) -> Self {
         let connection = database::establish_connection();
-        let result = recipes
+        let result = table
             .filter(schema::recipes::dsl::id.eq(recipe_id))
             .limit(1)
-            .load::<Recipe>(&connection)
+            .load::<Self>(&connection)
             .expect("Cannot find recipe");
 
         match result.first() {
@@ -45,9 +48,13 @@ impl Recipe {
     pub fn delete(&self) -> bool {
         let connection = database::establish_connection();
 
-        match diesel::delete(recipes.find(self.id)).execute(&connection) {
+        match diesel::delete(table.find(self.id)).execute(&connection) {
             Ok(_) => true,
             Err(_) => false,
         }
+    }
+
+    pub fn user(&self) -> models::user::User {
+        models::user::User::find(self.user_id)
     }
 }

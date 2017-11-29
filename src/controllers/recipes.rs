@@ -2,6 +2,7 @@
 use rocket_contrib::Template;
 use rocket::response::Redirect;
 use rocket::request::Form;
+use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
@@ -13,7 +14,12 @@ use database;
 
 #[get("/")]
 pub fn index() -> Template {
-    Template::render("recipes/index", models::recipe::Recipe::all(20))
+    let connection = database::establish_connection();
+    let data: Vec<(models::recipe::Recipe, models::user::User)> = recipes
+        .inner_join(schema::users::table)
+        .load(&connection)
+        .expect("Error loading data");
+    Template::render("recipes/index", data)
 }
 
 #[get("/<recipe_id>")]

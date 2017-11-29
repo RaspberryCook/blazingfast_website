@@ -1,5 +1,6 @@
 #![feature(plugin)]
 #![feature(custom_derive)]
+#![feature(custom_attribute)]
 #![plugin(rocket_codegen, diesel_codegen)]
 extern crate dotenv;
 extern crate rocket;

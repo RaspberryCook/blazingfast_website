@@ -1,8 +1,13 @@
 {{#*inline "content"}}
 <h1>Liste des recettes</h1>
+
 <ul>
     {{#each this}}
-        <li><a href="/recipes/{{id}}">{{name}}</a></li>
+        <li>
+            <a href="/recipes/{{0.id}}">{{0.name}}</a>
+            de
+            <a href="/user/{{1.id}}">{{1.firstname}} {{1.lastname}}</a>
+        </li>
     {{/each}}
 </ul>
 
