@@ -1,4 +1,20 @@
 {{#*inline "content"}}
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="/">home</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/recipes">recipes</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/recipes/{{recipe.id}}">{{recipe.name}}</a>
+    </li>
+    <li class="breadcrumb-item active">edit</li>
+  </ol>
+</nav>
+
 <h1>Edit recipe</h1>
 <form action="/recipes/{{recipe.id}}" method="POST">
     <input type="hidden" name="_method" value="put" />

@@ -1,4 +1,22 @@
 {{#*inline "content"}}
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="/">home</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/users">users</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/users/{{id}}">{{firstname}} {{lastname}}</a>
+    </li>
+    <li class="breadcrumb-item active">
+        <a href="/users/{{id}}/edit">edit</a>
+    </li>
+  </ol>
+</nav>
+
 <h1>Edit user</h1>
 <form action="/users/{{id}}" method="POST">
     <input type="hidden" name="_method" value="put" />

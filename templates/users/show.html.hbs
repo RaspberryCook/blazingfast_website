@@ -1,4 +1,19 @@
 {{#*inline "content"}}
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="/">home</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/users">users</a>
+    </li>
+    <li class="breadcrumb-item active">
+        <a href="/users/{{id}}">{{firstname}} {{lastname}}</a>
+    </li>
+  </ol>
+</nav>
+
 <h1><a href="/users/{{id}}">{{firstname}} {{lastname}}</a></h1>
 
 <a href="/users/{{id}}/edit" class="btn btn-secondary">Edit</a>

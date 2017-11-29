@@ -1,12 +1,24 @@
 {{#*inline "content"}}
-<h1>Liste des recettes</h1>
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="/">home</a>
+    </li>
+    <li class="breadcrumb-item active">
+        <a href="/recipes">recipes</a>
+    </li>
+  </ol>
+</nav>
+
+<h1>Recipes</h1>
 
 <ul>
     {{#each this}}
         <li>
             <a href="/recipes/{{0.id}}">{{0.name}}</a>
             de
-            <a href="/user/{{1.id}}">{{1.firstname}} {{1.lastname}}</a>
+            <a href="/users/{{1.id}}">{{1.firstname}} {{1.lastname}}</a>
         </li>
     {{/each}}
 </ul>

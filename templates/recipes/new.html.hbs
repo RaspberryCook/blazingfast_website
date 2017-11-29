@@ -1,5 +1,20 @@
 {{#*inline "content"}}
-<h1>Créer une recette</h1>
+<!-- breadcrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="/">home</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/recipes">recipes</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        New recipe
+    </li>
+  </ol>
+</nav>
+
+<h1>New recipe</h1>
 <form action="/recipes" method="POST">
     <!-- name -->
     <div class="form-group">
