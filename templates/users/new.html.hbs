@@ -7,12 +7,12 @@
         <a href="/">home</a>
     </li>
     <li class="breadcrumb-item active">
-        <a href="/users/new">signin</a>
+        <a href="/users/new">signup</a>
     </li>
   </ol>
 </nav>
 
-<h1>Signin</h1>
+<h1>Signup</h1>
 <form action="/users" method="POST">
     <div class="row">
         <!-- email -->
@@ -41,5 +41,9 @@
         </div>
     </div>
 </form>
+<div class="alert alert-info" role="alert">
+  You have an account?
+  <a href="/sessions/new" class="alert-link">Signin here</a> 
+</div>
 {{/inline}}
 {{~> layouts/main~}}

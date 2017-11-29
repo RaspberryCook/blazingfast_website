@@ -42,6 +42,9 @@ fn main() {
         .mount("/users", routes![controllers::users::edit])
         .mount("/users", routes![controllers::users::update])
         .mount("/users", routes![controllers::users::delete])
+        // session
+        .mount("/sessions", routes![controllers::sessions::new])
+        .mount("/sessions", routes![controllers::sessions::create])
         .attach(Template::fairing())
         .launch();
 }
