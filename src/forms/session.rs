@@ -15,10 +15,11 @@ pub struct Session {
 
 
 impl Session {
+    /// Retrieve user if form values are corrects
     pub fn user(&self) -> Result<User, Error> {
-
+        // encrypt password
         let encrypted_password = forms::user::User::encrypt(&self.password);
-
+        // SQL query
         let connection = database::establish_connection();
         let result = schema::users::dsl::users
             .filter(schema::users::dsl::email.eq(&self.email))
@@ -26,11 +27,13 @@ impl Session {
             .limit(1)
             .load::<User>(&connection);
 
+        // get result & catch errors
         let users = match result {
             Ok(users) => users,
             Err(_) => return Err(Error::NotFound),
         };
 
+        // get first value if exists
         match users.first() {
             Some(ref mut user) => Ok(user.clone()),
             None => Err(Error::NotFound),

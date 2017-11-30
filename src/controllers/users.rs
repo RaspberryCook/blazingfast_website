@@ -9,22 +9,27 @@ use middlewares::session::Session;
 
 use models;
 use models::user::User;
-use forms;
+use forms::user::User as user_form;
 use database;
 
+
+/// List all users
 #[get("/")]
 pub fn index() -> Template {
     Template::render("users/index", User::all(20))
 }
 
+/// Show user
 #[get("/<user_id>")]
 pub fn show(user_id: i32) -> Template {
+    // context for template
     #[derive(Serialize)]
     struct Context {
-        recipes: Vec<models::recipe::Recipe>,
         user: User,
+        // recipe of user
+        recipes: Vec<models::recipe::Recipe>,
     }
-
+    // get values for context
     let user = User::find(user_id);
     let recipes = user.recipes();
 
@@ -44,9 +49,9 @@ pub fn new() -> Template {
 }
 
 #[post("/", data = "<form_data>")]
-pub fn create(form_data: Form<forms::user::User>) -> Redirect {
+pub fn create(form_data: Form<user_form>) -> Redirect {
     let connection = database::establish_connection();
-    let user = forms::user::User::from_form(form_data);
+    let user = user_form::from_form(form_data);
 
     match diesel::insert(&user).into(users).execute(&connection) {
         Ok(_) => Redirect::to("/users"),
@@ -60,9 +65,9 @@ pub fn edit(_session: Session, user_id: i32) -> Template {
 }
 
 #[put("/<user_id>", data = "<form_data>")]
-pub fn update(_session: Session, user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
+pub fn update(_session: Session, user_id: i32, form_data: Form<user_form>) -> Redirect {
+    // update user
     let connection = database::establish_connection();
-
     let result = diesel::update(users.find(user_id))
         .set((
             firstname.eq(form_data.get().firstname.to_string()),
