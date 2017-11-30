@@ -21,6 +21,7 @@ mod models;
 mod forms;
 mod database;
 mod schema;
+mod middlewares;
 
 
 fn main() {
