@@ -6,6 +6,7 @@ use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
+use middlewares::session::Session;
 
 use models;
 use forms;
@@ -44,7 +45,7 @@ pub fn show(recipe_id: i32) -> Template {
 
 
 #[get("/new")]
-pub fn new() -> Template {
+pub fn new(_session: Session) -> Template {
     Template::render("recipes/new", models::user::User::all(20))
 }
 
@@ -65,7 +66,7 @@ pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
 }
 
 #[get("/<recipe_id>/edit")]
-pub fn edit(recipe_id: i32) -> Template {
+pub fn edit(_session: Session, recipe_id: i32) -> Template {
     #[derive(Serialize)]
     struct Context {
         recipe: models::recipe::Recipe,
@@ -83,7 +84,11 @@ pub fn edit(recipe_id: i32) -> Template {
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]
-pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirect {
+pub fn update(
+    _session: Session,
+    recipe_id: i32,
+    form_data: Form<forms::recipe::Recipe>,
+) -> Redirect {
     let connection = database::establish_connection();
 
     let result = diesel::update(recipes.find(recipe_id))
@@ -101,7 +106,7 @@ pub fn update(recipe_id: i32, form_data: Form<forms::recipe::Recipe>) -> Redirec
 }
 
 #[delete("/<recipe_id>")]
-pub fn delete(recipe_id: i32) -> Redirect {
+pub fn delete(_session: Session, recipe_id: i32) -> Redirect {
     if models::recipe::Recipe::find(recipe_id).delete() {
         Redirect::to("/recipes")
     } else {

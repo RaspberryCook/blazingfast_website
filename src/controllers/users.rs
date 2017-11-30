@@ -5,6 +5,7 @@ use rocket::request::Form;
 use schema::users::dsl::*;
 use diesel;
 use diesel::prelude::*;
+use middlewares::session::Session;
 
 use models;
 use models::user::User;
@@ -54,12 +55,12 @@ pub fn create(form_data: Form<forms::user::User>) -> Redirect {
 }
 
 #[get("/<user_id>/edit")]
-pub fn edit(user_id: i32) -> Template {
+pub fn edit(_session: Session, user_id: i32) -> Template {
     Template::render("users/edit", User::find(user_id))
 }
 
 #[put("/<user_id>", data = "<form_data>")]
-pub fn update(user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
+pub fn update(_session: Session, user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
     let connection = database::establish_connection();
 
     let result = diesel::update(users.find(user_id))
@@ -76,7 +77,7 @@ pub fn update(user_id: i32, form_data: Form<forms::user::User>) -> Redirect {
 }
 
 #[delete("/<user_id>")]
-pub fn delete(user_id: i32) -> Redirect {
+pub fn delete(_session: Session, user_id: i32) -> Redirect {
     if User::find(user_id).delete() {
         Redirect::to("/users")
     } else {
