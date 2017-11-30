@@ -17,7 +17,7 @@ pub fn create(mut cookies: Cookies, form_data: Form<Session>) -> Redirect {
 
     match form.user() {
         Ok(user) => {
-            cookies.add(Cookie::new("user", "logged"));
+            cookies.add_private(Cookie::new("user_id", user.id.to_string()));
             Redirect::to("/")
         }
         Err(_) => Redirect::to("/sessions/new"),

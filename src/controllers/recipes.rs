@@ -45,8 +45,9 @@ pub fn show(recipe_id: i32) -> Template {
 
 
 #[get("/new")]
-pub fn new(_session: Session) -> Template {
-    Template::render("recipes/new", models::user::User::all(20))
+pub fn new(session: Session) -> Template {
+    let user = session.user();
+    Template::render("recipes/new", user)
 }
 
 #[post("/", data = "<form_data>")]
