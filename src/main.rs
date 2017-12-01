@@ -22,9 +22,11 @@ mod forms;
 mod database;
 mod schema;
 mod middlewares;
+mod tests;
 
 
-fn main() {
+
+fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .mount("/", routes![controllers::pages::home])
         // recipes
@@ -47,5 +49,10 @@ fn main() {
         .mount("/sessions", routes![controllers::sessions::new])
         .mount("/sessions", routes![controllers::sessions::create])
         .attach(Template::fairing())
-        .launch();
+
+}
+
+
+fn main() {
+    rocket().launch();
 }
