@@ -20,9 +20,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for Session {
 
 
 impl Session {
+    /// get user_id from cookie value
+    pub fn user_id(&self) -> i32 {
+        self.0.parse::<i32>().unwrap()
+    }
+
     /// get user from cookie value
     pub fn user(&self) -> User {
-        let id = self.0.parse::<i32>().unwrap();
-        User::find(id)
+        User::find(self.user_id())
     }
 }

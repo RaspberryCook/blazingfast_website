@@ -50,15 +50,10 @@ pub fn new(session: Session) -> Template {
     Template::render("recipes/new", user)
 }
 
-#[post("/", data = "<form_data>")]
-pub fn create(form_data: Form<forms::recipe::Recipe>) -> Redirect {
+#[post("/", data = "<form>")]
+pub fn create(form: Form<forms::recipe::Recipe>, session: Session) -> Redirect {
+    let recipe = form.get().new_recipe(session.user_id());
     let connection = database::establish_connection();
-
-    let recipe = forms::recipe::Recipe {
-        id: None,
-        name: form_data.get().name.to_string(),
-        user_id: form_data.get().user_id,
-    };
 
     match diesel::insert(&recipe).into(recipes).execute(&connection) {
         Ok(_) => Redirect::to("/recipes"),
@@ -90,13 +85,11 @@ pub fn update(
     recipe_id: i32,
     form_data: Form<forms::recipe::Recipe>,
 ) -> Redirect {
+    let form = form_data.get();
     let connection = database::establish_connection();
 
     let result = diesel::update(recipes.find(recipe_id))
-        .set((
-            name.eq(form_data.get().name.to_string()),
-            user_id.eq(form_data.get().user_id),
-        ))
+        .set(name.eq(form.name.to_string()))
         .execute(&connection);
 
 
