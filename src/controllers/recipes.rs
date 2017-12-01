@@ -1,12 +1,15 @@
 
 use rocket_contrib::Template;
+use rocket::http::Cookies;
 use rocket::response::Redirect;
 use rocket::request::Form;
-use schema;
 use schema::recipes::dsl::*;
 use diesel;
 use diesel::prelude::*;
 use middlewares::session::Session;
+
+use controllers::context::Context;
+
 
 use models;
 use forms;
@@ -14,40 +17,37 @@ use database;
 
 
 #[get("/")]
-pub fn index() -> Template {
-    let connection = database::establish_connection();
-    let data: Vec<(models::recipe::Recipe, models::user::User)> = recipes
-        .inner_join(schema::users::table)
-        .load(&connection)
-        .expect("Error loading data");
-    Template::render("recipes/index", data)
+pub fn index(cookies: Cookies) -> Template {
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+    context.load_recipes_and_user();
+
+    Template::render("recipes/index", &context)
 }
 
 #[get("/<recipe_id>")]
-pub fn show(recipe_id: i32) -> Template {
-    #[derive(Serialize)]
-    struct Context {
-        recipe: models::recipe::Recipe,
-        user: models::user::User,
-    }
-
+pub fn show(recipe_id: i32, cookies: Cookies) -> Template {
     let recipe = models::recipe::Recipe::find(recipe_id);
     let user = recipe.user();
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+    context.editable = match context.get_current_user() {
+        Some(current_user) => (current_user.id == recipe.user_id),
+        None => false,
+    };
+    context.add_recipe(recipe);
+    context.add_user(user);
 
-    Template::render(
-        "recipes/show",
-        Context {
-            recipe: recipe,
-            user: user,
-        },
-    )
+    Template::render("recipes/show", &context)
 }
 
 
 #[get("/new")]
-pub fn new(session: Session) -> Template {
-    let user = session.user();
-    Template::render("recipes/new", user)
+pub fn new(_session: Session, cookies: Cookies) -> Template {
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+
+    Template::render("recipes/new", &context)
 }
 
 #[post("/", data = "<form>")]
@@ -62,8 +62,10 @@ pub fn create(form: Form<forms::recipe::Recipe>, session: Session) -> Redirect {
 }
 
 #[get("/<recipe_id>/edit")]
-pub fn edit(session: Session, recipe_id: i32) -> Template {
-    let current_user = session.user();
+pub fn edit(_session: Session, recipe_id: i32, cookies: Cookies) -> Template {
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+    let current_user = context.get_current_user().unwrap();
     let recipe = models::recipe::Recipe::find(recipe_id);
 
     // check if current user own this recipe
@@ -71,19 +73,7 @@ pub fn edit(session: Session, recipe_id: i32) -> Template {
         return Template::render("errors/403", &());
     }
 
-    #[derive(Serialize)]
-    struct Context {
-        recipe: models::recipe::Recipe,
-        users: Vec<models::user::User>,
-    }
-
-    Template::render(
-        "recipes/edit",
-        Context {
-            recipe: recipe,
-            users: models::user::User::all(20),
-        },
-    )
+    Template::render("recipes/edit", context)
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]

@@ -18,11 +18,15 @@
 
 <p>Recipe of <a href="/users/{{user.id}}">{{user.firstname}} {{user.lastname}}</a></p>
 
-<a href="/recipes/{{recipe.id}}/edit" class="btn btn-secondary">Edit</a>
-<!-- delete button -->
-<form action="/recipes/{{recipe.id}}" method="post">
-    <input type="hidden" name="_method" value="delete" />
-    <input type="submit" class="btn btn-danger" value="Delete">
-</form>
+
+{{#if this.editable}}
+    <a href="/recipes/{{recipe.id}}/edit" class="btn btn-secondary">Edit</a>
+    <!-- delete button -->
+    <form action="/recipes/{{recipe.id}}" method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <input type="submit" class="btn btn-danger" value="Delete">
+    </form>
+{{/if}}
+
 {{/inline}}
 {{~> layouts/main~}}

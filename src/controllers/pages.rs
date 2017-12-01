@@ -1,6 +1,6 @@
 
 use rocket_contrib::Template;
-use rocket::http::{Cookie, Cookies};
+use rocket::http::Cookies;
 use controllers::context::Context;
 
 
