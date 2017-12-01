@@ -3,6 +3,7 @@
 use std;
 
 use models;
+use models::user::User;
 use database;
 use schema;
 use schema::recipes;
@@ -55,6 +56,10 @@ impl Recipe {
     }
 
     pub fn user(&self) -> models::user::User {
-        models::user::User::find(self.user_id)
+        User::find(self.user_id)
+    }
+
+    pub fn is_owned_by(&self, user: &User) -> bool {
+        user.id != self.user_id
     }
 }

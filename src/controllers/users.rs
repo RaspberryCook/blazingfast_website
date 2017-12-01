@@ -60,12 +60,29 @@ pub fn create(form_data: Form<user_form>) -> Redirect {
 }
 
 #[get("/<user_id>/edit")]
-pub fn edit(_session: Session, user_id: i32) -> Template {
-    Template::render("users/edit", User::find(user_id))
+pub fn edit(session: Session, user_id: i32) -> Template {
+    let current_user = session.user();
+    let user = User::find(user_id);
+
+    // check if current user is this user
+    if current_user.id == user.id {
+        Template::render("users/edit", User::find(user_id))
+    } else {
+        Template::render("errors/403", &())
+    }
 }
 
 #[put("/<user_id>", data = "<form_data>")]
-pub fn update(_session: Session, user_id: i32, form_data: Form<user_form>) -> Redirect {
+pub fn update(session: Session, user_id: i32, form_data: Form<user_form>) -> Redirect {
+    let current_user = session.user();
+    let user = User::find(user_id);
+
+    // check if current user is this user
+    if current_user.id == user.id {
+        // TODO: build a return to errors#403
+        panic!("Can't delete recipe")
+    }
+
     // update user
     let connection = database::establish_connection();
     let result = diesel::update(users.find(user_id))
@@ -82,7 +99,16 @@ pub fn update(_session: Session, user_id: i32, form_data: Form<user_form>) -> Re
 }
 
 #[delete("/<user_id>")]
-pub fn delete(_session: Session, user_id: i32) -> Redirect {
+pub fn delete(session: Session, user_id: i32) -> Redirect {
+    let current_user = session.user();
+    let user = User::find(user_id);
+
+    // check if current user is this user
+    if current_user.id == user.id {
+        // TODO: build a return to errors#403
+        panic!("Can't delete recipe")
+    }
+
     if User::find(user_id).delete() {
         Redirect::to("/users")
     } else {
