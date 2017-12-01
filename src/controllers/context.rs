@@ -32,7 +32,7 @@ impl Context {
     }
 
     /// Try to add current user from cookie
-    pub fn add_current_user(&mut self, mut cookies: Cookies) {
+    pub fn set_current_user(&mut self, mut cookies: Cookies) {
         match cookies.get_private("user_id") {
             Some(ref cookie) => {
                 let user_id = cookie.value().parse::<i32>().unwrap();
@@ -47,15 +47,15 @@ impl Context {
         self.current_user.clone()
     }
 
-    pub fn add_recipe(&mut self, recipe: Recipe) {
+    pub fn set_recipe(&mut self, recipe: Recipe) {
         self.recipe = Some(recipe);
     }
 
-    pub fn add_recipes(&mut self, recipes_param: Vec<Recipe>) {
+    pub fn set_recipes(&mut self, recipes_param: Vec<Recipe>) {
         self.recipes = Some(recipes_param);
     }
 
-    pub fn add_user(&mut self, user: User) {
+    pub fn set_user(&mut self, user: User) {
         self.user = Some(user);
     }
 
