@@ -14,6 +14,7 @@ pub struct Context {
     user: Option<User>,
     users: Option<Vec<User>>,
     recipe: Option<Recipe>,
+    recipes: Option<Vec<Recipe>>,
     recipes_and_user: Option<Vec<(Recipe, User)>>,
 }
 
@@ -23,6 +24,7 @@ impl Context {
             editable: false,
             current_user: None,
             recipe: None,
+            recipes: None,
             recipes_and_user: None,
             user: None,
             users: None,
@@ -49,6 +51,10 @@ impl Context {
         self.recipe = Some(recipe);
     }
 
+    pub fn add_recipes(&mut self, recipes_param: Vec<Recipe>) {
+        self.recipes = Some(recipes_param);
+    }
+
     pub fn add_user(&mut self, user: User) {
         self.user = Some(user);
     }
@@ -63,7 +69,7 @@ impl Context {
         );
     }
 
-    // pub fn load_users(&mut self) {
-    //     self.users = User::all(20);
-    // }
+    pub fn load_users(&mut self) {
+        self.users = Some(User::all(20));
+    }
 }

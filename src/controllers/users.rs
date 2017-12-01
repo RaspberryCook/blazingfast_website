@@ -1,13 +1,14 @@
 
 use rocket_contrib::Template;
 use rocket::response::Redirect;
+use rocket::http::Cookies;
 use rocket::request::Form;
 use schema::users::dsl::*;
 use diesel;
 use diesel::prelude::*;
 use middlewares::session::Session;
+use controllers::context::Context;
 
-use models;
 use models::user::User;
 use forms::user::User as user_form;
 use database;
@@ -15,31 +16,29 @@ use database;
 
 /// List all users
 #[get("/")]
-pub fn index() -> Template {
-    Template::render("users/index", User::all(20))
+pub fn index(cookies: Cookies) -> Template {
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+    context.load_users();
+
+    Template::render("users/index", &context)
 }
 
 /// Show user
 #[get("/<user_id>")]
-pub fn show(user_id: i32) -> Template {
-    // context for template
-    #[derive(Serialize)]
-    struct Context {
-        user: User,
-        // recipe of user
-        recipes: Vec<models::recipe::Recipe>,
-    }
-    // get values for context
+pub fn show(user_id: i32, cookies: Cookies) -> Template {
     let user = User::find(user_id);
-    let recipes = user.recipes();
+    let user_recipes = user.recipes();
+    let mut context = Context::new();
+    context.add_current_user(cookies);
+    context.add_recipes(user_recipes);
+    context.editable = match context.get_current_user() {
+        Some(current_user) => (current_user.id == user.id),
+        None => false,
+    };
+    context.add_user(user);
 
-    Template::render(
-        "users/show",
-        Context {
-            user: user,
-            recipes: recipes,
-        },
-    )
+    Template::render("users/show", &context)
 }
 
 
@@ -60,20 +59,28 @@ pub fn create(form_data: Form<user_form>) -> Redirect {
 }
 
 #[get("/<user_id>/edit")]
-pub fn edit(session: Session, user_id: i32) -> Template {
-    let current_user = session.user();
+pub fn edit(user_id: i32, cookies: Cookies) -> Template {
     let user = User::find(user_id);
+    let mut context = Context::new();
+    context.add_current_user(cookies);
 
-    // check if current user is this user
+    // get user & redirect if don't exist
+    let current_user = match context.get_current_user() {
+        Some(current_user) => current_user,
+        None => return Template::render("errors/403", &context),
+    };
+
+    // verify owner
     if current_user.id == user.id {
-        Template::render("users/edit", User::find(user_id))
+        context.add_user(user);
+        Template::render("users/edit", &context)
     } else {
-        Template::render("errors/403", &())
+        Template::render("errors/403", &context)
     }
 }
 
 #[put("/<user_id>", data = "<form_data>")]
-pub fn update(session: Session, user_id: i32, form_data: Form<user_form>) -> Redirect {
+pub fn update(user_id: i32, form_data: Form<user_form>, session: Session) -> Redirect {
     let current_user = session.user();
     let user = User::find(user_id);
 
@@ -94,7 +101,7 @@ pub fn update(session: Session, user_id: i32, form_data: Form<user_form>) -> Red
 
     match result {
         Ok(_) => Redirect::to(&format!("/users/{}", user_id)),
-        Err(error) => panic!("There was a problem opening the file: {:?}", error),
+        Err(error) => panic!("{:?}", error),
     }
 }
 

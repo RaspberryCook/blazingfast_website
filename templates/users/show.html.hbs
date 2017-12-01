@@ -34,14 +34,20 @@
     </tr>
 </table>
 
-<a href="/users/{{user.id}}/edit" class="btn btn-secondary">Edit</a>
-<!-- delete button -->
-<form action="/users/{{user.id}}" method="post">
-    <input type="hidden" name="_method" value="delete" />
-    <input type="submit" class="btn btn-danger" value="Delete">
-</form>
 
-<h2>His recipes</h2>
+{{#if this.editable}}
+    <a href="/users/{{user.id}}/edit" class="btn btn-secondary">Edit</a>
+    <!-- delete button -->
+    <form action="/users/{{user.id}}" method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <input type="submit" class="btn btn-danger" value="Delete">
+    </form>
+
+    <h2>My recipes</h2>
+{{else}}
+    <h2>His recipes</h2>
+{{/if}}
+
 
 <ul>
     {{#each recipes}}

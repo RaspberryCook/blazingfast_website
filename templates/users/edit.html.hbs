@@ -9,24 +9,24 @@
         <a href="/users">users</a>
     </li>
     <li class="breadcrumb-item">
-        <a href="/users/{{id}}">{{firstname}} {{lastname}}</a>
+        <a href="/users/{{user.id}}">{{user.firstname}} {{user.lastname}}</a>
     </li>
     <li class="breadcrumb-item active">edit</li>
   </ol>
 </nav>
 
 <h1>Edit user</h1>
-<form action="/users/{{id}}" method="POST">
+<form action="/users/{{user.id}}" method="POST">
     <input type="hidden" name="_method" value="put" />
     <!-- firstname -->
     <div class="form-group">
         <label for="firstname">Firstname</label>
-        <input type="text" class="form-control" name="firstname" value="{{firstname}}">
+        <input type="text" class="form-control" name="firstname" value="{{user.firstname}}">
     </div>
     <!-- lastname -->
     <div class="form-group">
         <label for="lastname">Lastname</label>
-        <input type="text" class="form-control" name="lastname" value="{{lastname}}">
+        <input type="text" class="form-control" name="lastname" value="{{user.lastname}}">
     </div>
     <input type="submit" class="btn btn-secondary">
 </form>

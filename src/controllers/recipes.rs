@@ -72,8 +72,9 @@ pub fn edit(_session: Session, recipe_id: i32, cookies: Cookies) -> Template {
     if recipe.is_owned_by(&current_user) {
         return Template::render("errors/403", &());
     }
+    context.add_recipe(recipe);
 
-    Template::render("recipes/edit", context)
+    Template::render("recipes/edit", &context)
 }
 
 #[put("/<recipe_id>", data = "<form_data>")]
